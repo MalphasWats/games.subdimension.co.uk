@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>glixl</title>
+	
+	<style type="text/css">
+		body {background: black; color:white;}
+		
+		canvas
+		{
+			background: white;
+			margin: 0px auto;
+			display:block;
+		}
+	</style>
+</head>
+<body>
+	<canvas width="400" height="400" id="canvas"></canvas>
+	<p><span id="fps"></span> fps</p>
+	
+	<script type="text/javascript" src="glixl-optimized.js"></script>
+	<script type="text/javascript" src="glixl.SpriteBucket.js"></script>
+	
+	<script type="text/javascript">
+		function Test()
+		{
+			var sprite1, sprite2;
+			
+			var sprite_sheet;
+			
+			//var bucket = new glixl.SpriteBucket();
+			
+			this.init = function()
+			{
+				var max = 400//1000;
+				var min = 0//-1000;
+				
+				sprite_sheet = new glixl.SpriteSheet({src:'sheet.png', frame_size:[16, 16]})
+				
+				
+				for(var j=0 ; j<10; j++)
+				{
+					var bucket = new glixl.SpriteBucket();
+					for (var i=0 ; i<500 ; i++)
+					{
+						var sprite = new glixl.Sprite( {sprite_sheet: sprite_sheet, animation_frames:[0, 1, 2, 3, 4, 5], x: Math.floor(Math.random()*(max-min+1)+min), y: Math.floor(Math.random()*(max-min+1)+min), size:[16, 16], scale: 1} );
+						bucket.add_sprite(sprite);
+					}
+					glixl.add_to_scene(bucket);
+				}
+				
+				
+				
+				sprite1 = new glixl.Sprite( {sprite_sheet: sprite_sheet, frame:0, x: 0, y: 0, size:[16, 16], scale: 4} );
+				glixl.add_to_scene(sprite1);
+			
+				sprite2 = new glixl.Sprite( {sprite_sheet: sprite_sheet, frame:6, x: 400, y: 400, size:[16, 16], scale: 1} );
+				glixl.add_to_scene(sprite2);
+			}
+			
+			this.update = function()
+			{
+				sprite1.x += 1;
+				sprite1.y += 1;
+				if (sprite1.y > 400)
+					sprite1.y = 0;
+					
+				if (sprite1.x > 400)
+					sprite1.x = 0;
+				
+				sprite2.x -= 1;
+				sprite2.y -= 1;
+				if (sprite2.y < 0)
+					sprite2.y = 400;
+					
+				if (sprite2.x < 0)
+					sprite2.x = 400;
+					
+					
+				/*sprite2.x -= 1;
+				if (sprite2.x < -50)
+					sprite2.x = 400;
+					
+				sprite2.y -= 1;
+				if (sprite2.y < -50)
+					sprite2.y = 400;*/
+					
+				
+				sprite2.redraw = true;
+				sprite1.redraw = true;
+				
+				
+					
+				document.getElementById('fps').innerHTML = glixl.fps;
+			}
+		}
+		
+		glixl.start(Test);
+    	
+    </script>
+</body>
+</html>

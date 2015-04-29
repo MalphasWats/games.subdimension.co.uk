@@ -1,0 +1,37 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <script>
+        var game_scale = 4
+    </script>
+    <script src="js/jaws/jaws.js"></script>
+    <script src="js/jaws/src/extras/tile_map_pathfinding.js"></script>
+    <script src="js/lighting_system.js"></script>
+    <script src="js/quint.js"></script>
+    
+    <script src="js/isotest.js"></script>
+    
+    <link type="text/css" rel="stylesheet" href="style/style.css">
+    <link type="text/css" rel="stylesheet" href="style/quint.css">
+    <title>iso</title>
+  </head>
+<body>
+
+	<h1>iso test</h1>
+	<canvas width="512" height="512" id="game"></canvas>
+	<div id="hud"> <span id="fps_box"><span id="fps"></span> fps.</span></div>
+	
+	
+  
+ 	<script>
+    jaws.onload = function()
+	{
+		jaws.unpack()
+		jaws.assets.bust_cache = true;
+		jaws.assets.add(["graphics/tiles.png"])
+		jaws.start(Iso)
+    }
+	</script>
+
+</body>
+</html>

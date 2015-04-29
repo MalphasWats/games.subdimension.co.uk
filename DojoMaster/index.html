@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dojo Master</title>
+	
+	<style type="text/css">
+		body {background: black; color:white;}
+		
+		canvas
+		{
+			background: white;
+			margin: 0px auto;
+			display:block;
+		}
+		
+		p
+		{
+			position:absolute;
+			top:5px;
+			left:20px;
+		}
+	</style>
+	<link rel="stylesheet" href="quint.css" type="text/css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+</head>
+<body>
+	<canvas width="416" height="416" id="canvas"></canvas>
+	<p><span id="fps"></span> fps | score: <span id="score">0</span></p>
+	
+	
+	<script type="text/javascript" src="glixl.js"></script>
+	<script type="text/javascript" src="DojoMaster.js"></script>
+	<script type="text/javascript" src="quint.js"></script>
+	
+	<script type="text/javascript">
+				
+		glixl.start(DojoMaster);
+    	
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MalphasWats - Ludum Dare 26</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<script src="lib/jaws.js"></script>
+
+<script src="themes.js"></script>
+<script src="game.js"></script>
+
+<script type="text/javascript" src="http://system.subdimension.co.uk/pulse/a/"></script>
+
+<style type="text/css">
+
+    body
+    {
+        background: black;
+        color: white;
+    }
+
+    canvas
+    {
+        display:block;
+        margin:0 auto;
+        
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-optimize-contrast;
+    }
+</style>
+    
+
+</head>
+
+<body>
+
+<canvas width="820" height="480" style="background:white;"></canvas>
+<h1>The Minimalist - Ludum Dare #26</h1>
+
+
+<script>
+    jaws.onload = function()
+    {
+        jaws.assets.add(["graphics/easel.png", "graphics/bryan.png", "graphics/paint.png", "graphics/icons.png"])
+        jaws.start(IntroMenu, {fps:30}, {test:"value"})
+    }
+</script>
+
+</body>
+</html>

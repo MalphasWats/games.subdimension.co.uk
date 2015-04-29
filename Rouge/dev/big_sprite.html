@@ -1,0 +1,201 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <script src="lib/jaws.js"></script>
+    <title>Big Sprite</title>
+  </head>
+<body style="background:#343434; color:white;">
+
+  <canvas width="320" height="320" style="background:white; border:3px solid black; border-radius:4px; display:block; margin:0 auto;"></canvas>
+  <p>FPS: <span id="fps"></span>.</p>
+  
+  <div id="info">
+    <h1>Big Sprite</h1>
+  </div>
+ 
+<script>
+    function Rouge() {
+        var player
+        var walls
+        var floor
+        
+        var fps
+        
+        var height = 30
+        var width  = 30
+        
+        var viewport
+        var floor_map
+        var wall_map
+        
+        var buffer = document.createElement('canvas')
+        buffer.width = width*32
+        buffer.height = height*32
+        var buffer_c = buffer.getContext('2d')
+        
+        var BG
+        
+        /* Called once when a game state is activated. Use it for one-time setup code. */
+        this.setup = function() {
+            fps = document.getElementById("fps")
+        
+            var sprite_sheet
+            sprite_sheet = new jaws.SpriteSheet({image: "tilesets/basic-32.png", frame_size: [32,32]})
+        
+            walls = new jaws.SpriteList()
+            floor = new jaws.SpriteList()
+            
+            /* We create some 32x32 blocks and save them in array blocks */
+            for (var i=0 ; i<width; i++)
+            {
+                for (var j=0 ; j<height; j++)
+                {
+                    floor.push( new Sprite({image: sprite_sheet.frames[5], x: i*32, y: j*32}) )
+                    
+                    if (i==0)
+                    {
+                        walls.push( new Sprite({image: sprite_sheet.frames[0], x: i, y: j*32}) )
+                        walls.push( new Sprite({image: sprite_sheet.frames[0], x: (width-1)*32, y: j*32}) )
+                    }
+                    if (j == 0)
+                    {
+                        walls.push( new Sprite({image: sprite_sheet.frames[0], x: i*32, y: j}) )
+                        walls.push( new Sprite({image: sprite_sheet.frames[0], x: i*32, y: (height-1)*32}) )
+                    }
+                }
+            }
+            
+            // custom placed walls
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 96, y: 64}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 96, y: 96}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 64, y: 96}) )
+            
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 128, y: 160}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 128, y: 192}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 128, y: 224}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 160, y: 160}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 192, y: 160}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 160, y: 224}) )
+            walls.push( new Sprite({image: sprite_sheet.frames[0], x: 192, y: 224}) )
+            
+            viewport = new jaws.Viewport({max_x: width*32, max_y: height*32})
+    
+            wall_map = new jaws.TileMap({size: [width, height], cell_size: [32,32]})
+            floor_map = new jaws.TileMap({size: [width, height], cell_size: [32,32]})
+            
+            floor_map.push(floor)
+            wall_map.push(walls)
+
+            player = new jaws.Sprite({image: "tilesets/player.png", x:64, y:64, anchor: "top_left"})
+            player.destination = false
+            player.path = []
+            player.move = function(x, y) 
+            {
+                this.x += x
+                //if(wall_map.atRect(player.rect()).length > 0) { this.x -= x; }
+                
+                this.y += y
+                //if(wall_map.atRect(player.rect()).length > 0) { this.y -= y; }
+            }
+            
+            player.moveTo = function(x, y)
+            {
+                /**
+                *  Here's the magic - find a path through the walls
+                */
+                this.path = wall_map.findPath([this.x, this.y], [x, y])
+                this.setDestination()
+            }
+            
+            player.setDestination = function()
+            {
+                if (this.path.length > 0)
+                {
+                    var next_node = this.path.shift()
+                    this.destination = floor_map.cell(next_node[0], next_node[1])[0]
+                }
+                else { this.destination = false }
+            }
+    
+            jaws.context.mozImageSmoothingEnabled = false;  // non-blurry, blocky retro scaling
+            jaws.preventDefaultKeys(["up", "down", "left", "right", "space"])
+            
+            for (var i=0 ; i<floor.sprites.length ; i++)
+            {
+                buffer_c.drawImage(floor.sprites[i].image, floor.sprites[i].x, floor.sprites[i].y, 32, 32)
+            }
+            for (var i=0 ; i<walls.sprites.length ; i++)
+            {
+                buffer_c.drawImage(walls.sprites[i].image, walls.sprites[i].x, walls.sprites[i].y, 32, 32)
+            }
+            //buffer_c.drawImage(jaws.canvas, 0, 0, 320, 320)
+            
+            BG = new Sprite({image: buffer, x:0, y:0})
+        }
+
+        /* update() will get called each game tick with your specified FPS. Put game logic here. */
+        this.update = function()
+        {
+            if ( jaws.pressed("left_mouse_button") && 
+                !jaws.isOutsideCanvas({x: jaws.mouse_x, y: jaws.mouse_y, width: 1, height: 1}) &&
+                !player.destination )
+            {
+                player.moveTo(jaws.mouse_x+viewport.x, jaws.mouse_y+viewport.y)
+            }
+            
+            //move player
+            if (player.x == player.destination.x && player.y == player.destination.y)
+            {
+            player.setDestination()
+            }
+            
+            if (player.destination)
+            {
+                if(player.x > player.destination.x)
+                {
+                    player.move(-4, 0)
+                }
+                else if (player.x < player.destination.x)
+                {
+                    player.move(4, 0)
+                }
+                if(player.y > player.destination.y)
+                {
+                    player.move(0, -4)
+                }
+                else if (player.y < player.destination.y)
+                {
+                    player.move(0, 4)
+                }
+            }
+            viewport.centerAround(player)
+            //jaws.forceInsideCanvas(player)
+            fps.innerHTML = jaws.game_loop.fps
+        }
+
+        /* Directly after each update draw() will be called. Put all your on-screen operations here. */
+        this.draw = function()
+        {
+            //jaws.clear()
+            //floor.draw()
+            //walls.draw()
+            //player.draw()
+            
+            //viewport.drawTileMap( floor_map )
+            //viewport.drawTileMap( wall_map )
+            viewport.draw(BG)
+            viewport.draw( player )
+        }
+    }
+    
+    jaws.onload = function()
+    {
+        jaws.unpack()
+        jaws.assets.add(["tilesets/basic-32.png", "tilesets/player.png"])
+        jaws.start(Rouge)
+    }
+</script>
+
+</body>
+</html>
+
